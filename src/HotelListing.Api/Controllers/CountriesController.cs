@@ -43,7 +43,7 @@ public class CountriesController : ControllerBase
     {
         if (id != country.Id)
         {
-            return BadRequest();
+            return BadRequest("Invalid Record Id");
         }
 
         _context.Entry(country).State = EntityState.Modified;
