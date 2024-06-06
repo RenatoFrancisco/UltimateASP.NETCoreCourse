@@ -29,12 +29,16 @@ public class CountriesController(HotelListingDbContext context, IMapper mapper) 
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutCountry(int id, Country country)
+    public async Task<IActionResult> PutCountry(int id, UpdateCountryDto updateCountryDto)
     {
-        if (id != country.Id)
+        if (id != updateCountryDto.Id)
             return BadRequest("Invalid Record Id");
 
-        context.Entry(country).State = EntityState.Modified;
+        var country = await GetById(id);
+        if (country is null)
+            return NotFound();
+
+        mapper.Map(updateCountryDto, country);
 
         try
         {
@@ -65,7 +69,7 @@ public class CountriesController(HotelListingDbContext context, IMapper mapper) 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCountry(int id)
     {
-        var country = await context.Countries.FindAsync(id);
+        var country = await GetById(id);
         if (country is null)
             return NotFound();
 
@@ -76,4 +80,6 @@ public class CountriesController(HotelListingDbContext context, IMapper mapper) 
     }
 
     private bool CountryExists(int id) => context.Countries.Any(e => e.Id == id);
+
+    private async Task<Country> GetById(int id) => await context.Countries.FindAsync(id);
 }
