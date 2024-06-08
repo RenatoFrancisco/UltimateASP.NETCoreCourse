@@ -20,12 +20,12 @@ builder.Services.AddCors(options =>
         b => b.AllowAnyHeader()
                .AllowAnyOrigin()
                .AllowAnyMethod());
-});
+}); 
 
 builder.Host.UseSerilog((ctx, lc) => 
     lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
 
-builder.Services.AddScoped<ICounttryRepository, CountryRepository>();
+builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 
 builder.Services.AddAutoMapper(typeof(MapperConfig));
 

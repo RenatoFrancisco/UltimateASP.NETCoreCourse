@@ -20,7 +20,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : Entity, new(
 
     public async Task<T> GetAsync(int id) => await DbSet.FindAsync(id);
 
-    public async Task<bool> Exists(int id) => await DbSet.FindAsync(id) is not null;
+    public async Task<bool> Exists(int id) => await DbSet.AnyAsync(x => x.Id == id);
 
     public async Task<T> Addsync(T entity)
     {
