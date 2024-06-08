@@ -2,38 +2,43 @@
 using Microsoft.EntityFrameworkCore;
 using HotelListing.Api.Data;
 using HotelListing.Api.Contracts;
+using AutoMapper;
+using HotelListing.Api.Models.Hotel;
 
 namespace HotelListing.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class HotelsController(IHotelRepository hotelRepository) : ControllerBase
+    public class HotelsController(IHotelRepository hotelRepository, IMapper mapper) : ControllerBase
     {
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Hotel>>> GetHotels() => 
-            Ok(await hotelRepository.GetAllAsync());
+        public async Task<ActionResult<IEnumerable<HotelDto>>> GetHotels() => 
+            mapper.Map<List<HotelDto>>(await hotelRepository.GetAllAsync());
          
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Hotel>> GetHotel(int id)
+        public async Task<ActionResult<HotelDto>> GetHotel(int id)
         {
             var hotel = await hotelRepository.GetAsync(id);
 
             if (hotel is null)
                 return NotFound();
 
-            return hotel;
+            return mapper.Map<HotelDto>(hotel);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutHotel(int id, Hotel hotel)
+        public async Task<IActionResult> PutHotel(int id, HotelDto hotelDto)
         {
-            if (id != hotel.Id)
+            if (id != hotelDto.Id)
                 return BadRequest("Invalid Record Id");
 
+            var hotel = await hotelRepository.GetAsync(id);
             if (hotel is null)
                 NotFound();
+
+            mapper.Map(hotelDto, hotel);
 
             try
             {
@@ -51,8 +56,9 @@ namespace HotelListing.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Hotel>> PostHotel(Hotel hotel)
+        public async Task<ActionResult<Hotel>> PostHotel(CreateHotelDto createHotelDto)
         {
+            var hotel = mapper.Map<Hotel>(createHotelDto);
             await hotelRepository.Addsync(hotel);
 
             return CreatedAtAction("GetHotel", new { id = hotel.Id }, hotel);

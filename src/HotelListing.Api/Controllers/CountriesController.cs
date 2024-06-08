@@ -13,7 +13,7 @@ public class CountriesController(ICountryRepository countryRepository, IMapper m
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries() => 
-        Ok(mapper.Map<List<GetCountryDto>>(await countryRepository.GetAllAsync()));
+        mapper.Map<List<GetCountryDto>>(await countryRepository.GetAllAsync());
 
     [HttpGet("{id}")]
     public async Task<ActionResult<CountryDto>> GetCountry(int id)
