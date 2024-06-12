@@ -32,6 +32,7 @@ builder.Host.UseSerilog((ctx, lc) =>
 
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<IHotelRepository, HotelRepository>();
+builder.Services.AddScoped<IAuthManager, AuthManager>();
 
 builder.Services.AddAutoMapper(typeof(MapperConfig));
 
