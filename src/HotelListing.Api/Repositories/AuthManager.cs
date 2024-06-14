@@ -8,7 +8,23 @@ namespace HotelListing.Api.Repositories
 {
     public class AuthManager(IMapper mapper, UserManager<ApiUser> userManager) : IAuthManager
     {
-        
+        public async Task<bool> Login(LoginDto loginDto)
+        {
+            var isValidUser = false;
+
+            try
+            {
+                var user = await userManager.FindByEmailAsync(loginDto.Email);
+                isValidUser = await userManager.CheckPasswordAsync(user, loginDto.Passworrd);
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return isValidUser;
+        }
+
         public async Task<IEnumerable<IdentityError>> Register(ApiUserDto userDto)
         {
             var user = mapper.Map<ApiUser>(userDto);

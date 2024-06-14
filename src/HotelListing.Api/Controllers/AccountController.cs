@@ -25,4 +25,18 @@ public class AccountController(IAuthManager authManager): ControllerBase
 
         return Ok();
     }
+
+    [HttpPost("login")]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> Login(LoginDto  loginDto)
+    {
+        var isValidUser = await authManager.Login(loginDto);
+
+        if (!isValidUser) return Unauthorized();
+
+        return Ok();
+    }
 }
