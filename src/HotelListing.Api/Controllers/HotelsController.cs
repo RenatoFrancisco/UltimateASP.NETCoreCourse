@@ -4,6 +4,7 @@ using HotelListing.Api.Data;
 using HotelListing.Api.Contracts;
 using AutoMapper;
 using HotelListing.Api.Models.Hotel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelListing.Api.Controllers
 {
@@ -29,6 +30,7 @@ namespace HotelListing.Api.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutHotel(int id, HotelDto hotelDto)
         {
             if (id != hotelDto.Id)
@@ -56,6 +58,7 @@ namespace HotelListing.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Hotel>> PostHotel(CreateHotelDto createHotelDto)
         {
             var hotel = mapper.Map<Hotel>(createHotelDto);
@@ -65,6 +68,7 @@ namespace HotelListing.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteHotel(int id)
         {
             if (!await hotelRepository.Exists(id))
