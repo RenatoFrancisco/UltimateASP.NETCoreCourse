@@ -27,13 +27,25 @@ public class AccountController(IAuthManager authManager): ControllerBase
     }
 
     [HttpPost("login")]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> Login(LoginDto  loginDto)
     {
         var authResponse = await authManager.Login(loginDto);
+
+        if (authResponse is null) return Unauthorized();
+
+        return Ok(authResponse);
+    }
+
+    [HttpPost("refreshtoken")]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> RefreshToken(AuthResponseDto request)
+    {
+        var authResponse = await authManager.VerifyRefreshToken(request);
 
         if (authResponse is null) return Unauthorized();
 
