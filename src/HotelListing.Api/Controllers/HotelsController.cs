@@ -5,6 +5,7 @@ using HotelListing.Api.Contracts;
 using AutoMapper;
 using HotelListing.Api.Models.Hotel;
 using Microsoft.AspNetCore.Authorization;
+using HotelListing.Api.Exceptions;
 
 namespace HotelListing.Api.Controllers
 {
@@ -14,17 +15,15 @@ namespace HotelListing.Api.Controllers
     {
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HotelDto>>> GetHotels() => 
+        public async Task<ActionResult<IEnumerable<HotelDto>>> GetHotels() =>
             mapper.Map<List<HotelDto>>(await hotelRepository.GetAllAsync());
-         
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<HotelDto>> GetHotel(int id)
         {
-            var hotel = await hotelRepository.GetAsync(id);
-
-            if (hotel is null)
-                return NotFound();
+            var hotel = await hotelRepository.GetAsync(id) 
+                ?? throw new NotFoundException(nameof(GetHotel), id);
 
             return mapper.Map<HotelDto>(hotel);
         }
@@ -36,23 +35,12 @@ namespace HotelListing.Api.Controllers
             if (id != hotelDto.Id)
                 return BadRequest("Invalid Record Id");
 
-            var hotel = await hotelRepository.GetAsync(id);
-            if (hotel is null)
-                NotFound();
+            var hotel = await hotelRepository.GetAsync(id)
+                ?? throw new NotFoundException(nameof(PutHotel), id);
 
             mapper.Map(hotelDto, hotel);
 
-            try
-            {
-                await hotelRepository.UpdateAsync(hotel);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!!await hotelRepository.Exists(id))
-                    return NotFound();
-                else
-                    throw;
-            }
+            await hotelRepository.UpdateAsync(hotel);
 
             return NoContent();
         }
@@ -72,7 +60,7 @@ namespace HotelListing.Api.Controllers
         public async Task<IActionResult> DeleteHotel(int id)
         {
             if (!await hotelRepository.Exists(id))
-                return NotFound();
+                throw new NotFoundException(nameof(DeleteHotel), id);
 
             await hotelRepository.DeleteAsync(id);
 

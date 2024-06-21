@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HotelListing.Api.Contracts;
 using HotelListing.Api.Data;
+using HotelListing.Api.Exceptions;
 using HotelListing.Api.Models.Country;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,16 +14,14 @@ namespace HotelListing.Api.Controllers;
 public class CountriesController(ICountryRepository countryRepository, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries() => 
+    public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries() =>
         mapper.Map<List<GetCountryDto>>(await countryRepository.GetAllAsync());
 
     [HttpGet("{id}")]
     public async Task<ActionResult<CountryDto>> GetCountry(int id)
     {
-        var country = await countryRepository.GetDetailsAsync(id);
-
-        if (country is null) 
-            return NotFound();
+        var country = await countryRepository.GetDetailsAsync(id) 
+            ?? throw new NotFoundException(nameof(GetCountry), id);
 
         return mapper.Map<CountryDto>(country);
     }
@@ -34,23 +33,12 @@ public class CountriesController(ICountryRepository countryRepository, IMapper m
         if (id != updateCountryDto.Id)
             return BadRequest("Invalid Record Id");
 
-        var country = await countryRepository.GetAsync(id);
-        if (country is null)
-            return NotFound();
+        var country = await countryRepository.GetAsync(id) 
+            ?? throw new NotFoundException(nameof(PutCountry), id);
 
         mapper.Map(updateCountryDto, country);
 
-        try
-        {
-            await countryRepository.UpdateAsync(country);
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!await countryRepository.Exists(id)) 
-                return NotFound();
-            else 
-                throw;
-        }
+        await countryRepository.UpdateAsync(country);
 
         return NoContent();
     }
@@ -71,7 +59,7 @@ public class CountriesController(ICountryRepository countryRepository, IMapper m
     public async Task<IActionResult> DeleteCountry(int id)
     {
         if (!await countryRepository.Exists(id))
-            return NotFound();
+            throw new NotFoundException(nameof(DeleteCountry), id);
 
         await countryRepository.DeleteAsync(id);
 
