@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using HotelListing.Api.Configurations;
 using HotelListing.Api.Contracts;
 using HotelListing.Api.Data;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Serilog;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,10 +31,19 @@ builder.Services.AddCors(options =>
         b => b.AllowAnyHeader()
                .AllowAnyOrigin()
                .AllowAnyMethod());
-}); 
+});
 
-builder.Host.UseSerilog((ctx, lc) => 
-    lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
+builder.Services.AddApiVersioning(options =>
+{
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.ReportApiVersions = true;
+    options.ApiVersionReader = new UrlSegmentApiVersionReader();
+}).AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
 
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<IHotelRepository, HotelRepository>();

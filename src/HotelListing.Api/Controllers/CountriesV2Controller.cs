@@ -11,8 +11,8 @@ namespace HotelListing.Api.Controllers;
 
 [Route("api/v{version:apiVersion}/countries")]
 [ApiController]
-[ApiVersion("1.0", Deprecated = true)]
-public class CountriesController(ICountryRepository countryRepository, IMapper mapper) : ControllerBase
+[ApiVersion("2.0")]
+public class CountriesV2Controller(ICountryRepository countryRepository, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries() =>
