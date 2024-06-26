@@ -6,6 +6,7 @@ using AutoMapper;
 using HotelListing.Api.Models.Hotel;
 using Microsoft.AspNetCore.Authorization;
 using HotelListing.Api.Exceptions;
+using HotelListing.Api.Models;
 
 namespace HotelListing.Api.Controllers
 {
@@ -14,9 +15,13 @@ namespace HotelListing.Api.Controllers
     public class HotelsController(IHotelRepository hotelRepository, IMapper mapper) : ControllerBase
     {
 
-        [HttpGet]
+        [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<HotelDto>>> GetHotels() =>
             mapper.Map<List<HotelDto>>(await hotelRepository.GetAllAsync());
+
+        [HttpGet]
+        public async Task<ActionResult<PagedResult<HotelDto>>> GetHotels([FromQuery] QueryParameters query) =>
+            await hotelRepository.GetAllAsync<HotelDto>(query);
 
 
         [HttpGet("{id}")]

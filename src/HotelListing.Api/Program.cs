@@ -99,7 +99,7 @@ app.Use(async (context, next) =>
     context.Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
     {
         Public = true,
-        MaxAge = TimeSpan.FromSeconds(30),
+        MaxAge = TimeSpan.FromSeconds(10),
     };
 
     context.Response.Headers[HeaderNames.Vary] = new string[] { "Accept-Enconding" };

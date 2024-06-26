@@ -3,6 +3,7 @@ using AutoMapper;
 using HotelListing.Api.Contracts;
 using HotelListing.Api.Data;
 using HotelListing.Api.Exceptions;
+using HotelListing.Api.Models;
 using HotelListing.Api.Models.Country;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,9 +15,13 @@ namespace HotelListing.Api.Controllers;
 [ApiVersion("1.0", Deprecated = true)]
 public class CountriesController(ICountryRepository countryRepository, IMapper mapper) : ControllerBase
 {
-    [HttpGet]
+    [HttpGet("GetAll")]
     public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries() =>
         mapper.Map<List<GetCountryDto>>(await countryRepository.GetAllAsync());
+
+    [HttpGet]
+    public async Task<ActionResult<PagedResult<GetCountryDto>>> GetCountries([FromQuery] QueryParameters query) =>
+        await countryRepository.GetAllAsync<GetCountryDto>(query);
 
     [HttpGet("{id}")]
     public async Task<ActionResult<CountryDto>> GetCountry(int id)
