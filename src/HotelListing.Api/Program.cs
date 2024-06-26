@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -71,6 +72,12 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddResponseCaching(options =>
+{
+    options.MaximumBodySize = 1024;
+    options.UseCaseSensitivePaths = true;
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -84,6 +91,21 @@ app.UseMiddleware<ExceptionMiddlaware>();
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
+
+app.UseResponseCaching();
+
+app.Use(async (context, next) =>
+{
+    context.Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
+    {
+        Public = true,
+        MaxAge = TimeSpan.FromSeconds(30),
+    };
+
+    context.Response.Headers[HeaderNames.Vary] = new string[] { "Accept-Enconding" };
+
+    await next();
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
