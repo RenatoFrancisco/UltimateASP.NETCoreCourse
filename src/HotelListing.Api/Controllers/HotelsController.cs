@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using HotelListing.Api.Data;
+﻿using AutoMapper;
 using HotelListing.Api.Contracts;
-using AutoMapper;
-using HotelListing.Api.Models.Hotel;
-using Microsoft.AspNetCore.Authorization;
+using HotelListing.Api.Data;
 using HotelListing.Api.Exceptions;
 using HotelListing.Api.Models;
+using HotelListing.Api.Models.Hotel;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace HotelListing.Api.Controllers
 {
@@ -16,6 +16,7 @@ namespace HotelListing.Api.Controllers
     {
 
         [HttpGet("GetAll")]
+        [EnableQuery]
         public async Task<ActionResult<IEnumerable<HotelDto>>> GetHotels() =>
             mapper.Map<List<HotelDto>>(await hotelRepository.GetAllAsync());
 
