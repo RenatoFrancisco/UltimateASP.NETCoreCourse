@@ -1,10 +1,10 @@
 ﻿using Asp.Versioning;
 using AutoMapper;
-using HotelListing.Api.Contracts;
+using HotelListing.Api.Core.Contracts;
 using HotelListing.Api.Data;
-using HotelListing.Api.Exceptions;
-using HotelListing.Api.Models;
-using HotelListing.Api.Models.Country;
+using HotelListing.Api.Core.Exceptions;
+using HotelListing.Api.Core.Models;
+using HotelListing.Api.Core.Models.Country;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;

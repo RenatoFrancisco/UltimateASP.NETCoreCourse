@@ -1,9 +1,9 @@
 using Asp.Versioning;
-using HotelListing.Api.Configurations;
-using HotelListing.Api.Contracts;
+using HotelListing.Api.Core.Configurations;
+using HotelListing.Api.Core.Contracts;
 using HotelListing.Api.Data;
-using HotelListing.Api.Middleware;
-using HotelListing.Api.Repositories;
+using HotelListing.Api.Core.Middleware;
+using HotelListing.Api.Core.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData;
