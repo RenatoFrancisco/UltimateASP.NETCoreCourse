@@ -6,7 +6,7 @@ namespace HotelListing.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AccountController(IAuthManager authManager, ILogger<AccountController> logger): ControllerBase
+public class AccountController(IAuthManager authManager, ILogger<AccountController> logger) : ControllerBase
 {
     [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,7 +36,7 @@ public class AccountController(IAuthManager authManager, ILogger<AccountControll
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> Login(LoginDto  loginDto)
+    public async Task<ActionResult> Login(LoginDto loginDto)
     {
         logger.LogInformation($"Login attempt for user with email {loginDto.Email}.");
 

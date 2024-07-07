@@ -1,10 +1,10 @@
 ﻿using Asp.Versioning;
 using AutoMapper;
 using HotelListing.Api.Core.Contracts;
-using HotelListing.Api.Data;
 using HotelListing.Api.Core.Exceptions;
 using HotelListing.Api.Core.Models;
 using HotelListing.Api.Core.Models.Country;
+using HotelListing.Api.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -19,7 +19,7 @@ public class CountriesController(ICountryRepository countryRepository, IMapper m
     [HttpGet("GetAll")]
     [EnableQuery]
     public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries() =>
-        mapper.Map<List<GetCountryDto>>(await countryRepository.GetAllAsync());
+        (await countryRepository.GetAllAsync<GetCountryDto>()).ToList();
 
     [HttpGet]
     public async Task<ActionResult<PagedResult<GetCountryDto>>> GetCountries([FromQuery] QueryParameters query) =>
@@ -28,10 +28,18 @@ public class CountriesController(ICountryRepository countryRepository, IMapper m
     [HttpGet("{id}")]
     public async Task<ActionResult<CountryDto>> GetCountry(int id)
     {
-        var country = await countryRepository.GetDetailsAsync(id) 
+        var country = await countryRepository.GetDetailsAsync(id)
             ?? throw new NotFoundException(nameof(GetCountry), id);
 
         return mapper.Map<CountryDto>(country);
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<ActionResult<Country>> PostCountry(CreateCountryDto createCountry)
+    {
+        var country = await countryRepository.Addsync<CreateCountryDto, Country>(createCountry);
+        return CreatedAtAction("GetCountry", new { id = country.Id }, country);
     }
 
     [HttpPut("{id}")]
@@ -41,25 +49,9 @@ public class CountriesController(ICountryRepository countryRepository, IMapper m
         if (id != updateCountryDto.Id)
             return BadRequest("Invalid Record Id");
 
-        var country = await countryRepository.GetAsync(id) 
-            ?? throw new NotFoundException(nameof(PutCountry), id);
-
-        mapper.Map(updateCountryDto, country);
-
-        await countryRepository.UpdateAsync(country);
+        await countryRepository.UpdateAsync(id, updateCountryDto);
 
         return NoContent();
-    }
-
-    [HttpPost]
-    [Authorize]
-    public async Task<ActionResult<Country>> PostCountry(CreateCountryDto createCountry)
-    {
-        var country = mapper.Map<Country>(createCountry);
-
-        await countryRepository.Addsync(country);
-
-        return CreatedAtAction("GetCountry", new { id = country.Id }, country);
     }
 
     [HttpDelete("{id}")]
