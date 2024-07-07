@@ -17,11 +17,11 @@ namespace HotelListing.Api.Controllers;
 public class CountriesController(ICountryRepository countryRepository, IMapper mapper) : ControllerBase
 {
     [HttpGet("GetAll")]
-    [EnableQuery]
     public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries() =>
         (await countryRepository.GetAllAsync<GetCountryDto>()).ToList();
 
     [HttpGet]
+    [EnableQuery]
     public async Task<ActionResult<PagedResult<GetCountryDto>>> GetCountries([FromQuery] QueryParameters query) =>
         await countryRepository.GetAllAsync<GetCountryDto>(query);
 

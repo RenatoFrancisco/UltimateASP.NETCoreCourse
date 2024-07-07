@@ -15,11 +15,11 @@ namespace HotelListing.Api.Controllers
     public class HotelsController(IHotelRepository hotelRepository, IMapper mapper) : ControllerBase
     {
         [HttpGet("GetAll")]
-        [EnableQuery]
         public async Task<ActionResult<IEnumerable<HotelDto>>> GetHotels() =>
             (await hotelRepository.GetAllAsync<HotelDto>()).ToList();
 
         [HttpGet]
+        [EnableQuery]
         public async Task<ActionResult<PagedResult<HotelDto>>> GetHotels([FromQuery] QueryParameters query) =>
             await hotelRepository.GetAllAsync<HotelDto>(query);
 
